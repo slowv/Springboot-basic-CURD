@@ -1,10 +1,11 @@
 package com.slowv.youtuberef.web.rest;
 
 import com.slowv.youtuberef.service.dto.VideoDto;
+import com.slowv.youtuberef.service.dto.request.VideoSearchRequest;
+import com.slowv.youtuberef.service.dto.response.PagingResponse;
 import com.slowv.youtuberef.service.dto.response.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,9 +18,9 @@ public interface VideoController {
     @ResponseStatus(HttpStatus.CREATED)
     Response<VideoDto> create(@RequestBody final VideoDto dto);
 
-    @GetMapping
+    @PostMapping("/search")
     @ResponseStatus(HttpStatus.OK)
-    Response<Page<VideoDto>> getVideos();
+    Response<PagingResponse<VideoDto>> getVideos(@RequestBody final VideoSearchRequest request);
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)

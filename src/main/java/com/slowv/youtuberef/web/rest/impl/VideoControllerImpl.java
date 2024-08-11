@@ -2,16 +2,19 @@ package com.slowv.youtuberef.web.rest.impl;
 
 import com.slowv.youtuberef.service.VideoService;
 import com.slowv.youtuberef.service.dto.VideoDto;
+import com.slowv.youtuberef.service.dto.request.PagingRequest;
+import com.slowv.youtuberef.service.dto.request.VideoSearchRequest;
+import com.slowv.youtuberef.service.dto.response.PageableData;
+import com.slowv.youtuberef.service.dto.response.PagingResponse;
 import com.slowv.youtuberef.service.dto.response.Response;
 import com.slowv.youtuberef.web.rest.VideoController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
 import java.util.List;
 
 @Slf4j
@@ -32,11 +35,22 @@ public class VideoControllerImpl implements VideoController {
     }
 
     @Override
-    public Response<Page<VideoDto>> getVideos() {
+    public Response<PagingResponse<VideoDto>> getVideos(@RequestBody final VideoSearchRequest request) {
         log.info("======== Get list video ========");
-        final Page<VideoDto> videos = videoService.getVideos();
+        final Page<VideoDto> videos = videoService.getVideos(request);
+        final PagingRequest paging = request.getPaging();
         return Response
-                .ok(videos);
+                .ok(
+                        new PagingResponse<VideoDto>()
+                                .setContents(videos.getContent())
+                                .setPaging(
+                                        new PageableData()
+                                                .setPageNumber(paging.getPage() - 1)
+                                                .setTotalPage(videos.getTotalPages())
+                                                .setPageSize(paging.getSize())
+                                                .setTotalRecord(videos.getTotalElements())
+                                )
+                );
     }
 
     @Override

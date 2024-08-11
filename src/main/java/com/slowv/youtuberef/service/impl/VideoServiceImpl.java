@@ -5,6 +5,7 @@ import com.slowv.youtuberef.entity.enums.VideoStatus;
 import com.slowv.youtuberef.repository.VideoRepository;
 import com.slowv.youtuberef.service.VideoService;
 import com.slowv.youtuberef.service.dto.VideoDto;
+import com.slowv.youtuberef.service.dto.request.VideoSearchRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,8 +29,9 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public Page<VideoDto> getVideos() {
-        return null;
+    public Page<VideoDto> getVideos(@NonNull final VideoSearchRequest request) {
+        return videoRepository.findAll(request.specification(), request.getPaging().pageable())
+                .map(VideoDto::from);
     }
 
     @Override

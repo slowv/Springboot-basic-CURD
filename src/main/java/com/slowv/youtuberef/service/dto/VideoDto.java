@@ -8,6 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.lang.NonNull;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -17,6 +20,7 @@ public class VideoDto {
     private String url;
     private String description;
     private VideoStatus status = VideoStatus.DRAFT;
+    private Instant updatedAt;
 
     public static VideoDto from(@NonNull final VideoEntity entity) {
         return VideoDto.builder()
@@ -24,6 +28,7 @@ public class VideoDto {
                 .url(entity.getUrl())
                 .description(entity.getDescription())
                 .status(entity.getStatus())
+                .updatedAt(entity.getLastModifiedDate())
                 .build();
     }
 
