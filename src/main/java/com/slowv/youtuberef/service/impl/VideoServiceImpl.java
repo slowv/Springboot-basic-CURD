@@ -6,6 +6,7 @@ import com.slowv.youtuberef.repository.VideoRepository;
 import com.slowv.youtuberef.service.VideoService;
 import com.slowv.youtuberef.service.dto.VideoDto;
 import com.slowv.youtuberef.service.dto.request.VideoSearchRequest;
+import com.slowv.youtuberef.service.mapper.VideoMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,32 +21,33 @@ import java.util.List;
 public class VideoServiceImpl implements VideoService {
 
     private final VideoRepository videoRepository;
+    private final VideoMapper videoMapper;
 
     @Override
     public VideoDto getVideo(@NonNull final String id) {
         return videoRepository.findById(id)
-                .map(VideoDto::from)
+                .map(videoMapper::toDto)
                 .orElseThrow(() -> new RuntimeException("Video không tồn tại với id là: " + id));
     }
 
     @Override
     public Page<VideoDto> getVideos(@NonNull final VideoSearchRequest request) {
         return videoRepository.findAll(request.specification(), request.getPaging().pageable())
-                .map(VideoDto::from);
+                .map(videoMapper::toDto);
     }
 
     @Override
     public VideoDto create(@NonNull final VideoDto dto) {
-        final VideoEntity entity = dto.toEntity();
-        return VideoDto.from(videoRepository.save(entity));
+        final VideoEntity entity = videoMapper.toEntity(dto);
+        return videoMapper.toDto(videoRepository.save(entity));
     }
 
     @Override
     public VideoDto update(@NonNull final VideoDto dto) {
         final String id = dto.getId();
         if (videoRepository.existsById(id)) {
-            final VideoEntity entity = dto.toEntity();
-            return VideoDto.from(videoRepository.save(entity));
+            final VideoEntity entity = videoMapper.toEntity(dto);
+            return videoMapper.toDto(videoRepository.save(entity));
         }
         throw new RuntimeException("Không tìm thấy video với id là :" + id);
     }

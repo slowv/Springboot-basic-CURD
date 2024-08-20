@@ -31,5 +31,4 @@ public abstract class AbstractAuditingEntity<ID> implements Serializable {
     private Instant lastModifiedDate = Instant.now();
 
     public abstract ID getId();
-
 }

@@ -13,7 +13,6 @@ import org.hibernate.annotations.UuidGenerator;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VideoEntity extends AbstractAuditingEntity<String> {
-
     @Id
     @UuidGenerator
     private String id;
