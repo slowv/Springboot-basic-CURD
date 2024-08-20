@@ -4,7 +4,7 @@ import com.slowv.youtuberef.service.dto.VideoDto;
 import com.slowv.youtuberef.service.dto.request.VideoSearchRequest;
 import com.slowv.youtuberef.service.dto.response.PagingResponse;
 import com.slowv.youtuberef.service.dto.response.Response;
-import org.springframework.data.domain.Page;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +16,7 @@ public interface VideoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    Response<VideoDto> create(@RequestBody final VideoDto dto);
+    Response<VideoDto> create(@Valid @RequestBody final VideoDto dto);
 
     @PostMapping("/search")
     @ResponseStatus(HttpStatus.OK)
