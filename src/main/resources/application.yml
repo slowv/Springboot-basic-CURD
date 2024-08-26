@@ -23,5 +23,10 @@ spring:
       ddl-auto: update
     generate-ddl: true
 
+integration:
+  youtube:
+    api-key: ${API-KEY}
+    application-name: YoutubeRef
+
 server:
   port: 8080
