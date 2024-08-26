@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("/video")
+@RequestMapping("/_api/v1/admin/video")
 public interface VideoController {
 
     @PostMapping

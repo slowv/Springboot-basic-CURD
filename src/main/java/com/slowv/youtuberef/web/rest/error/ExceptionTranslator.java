@@ -1,22 +1,18 @@
 package com.slowv.youtuberef.web.rest.error;
 
-import com.slowv.youtuberef.common.AppConstant;
+import com.slowv.youtuberef.common.constants.AppConstant;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.client.ResponseErrorHandler;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
-public class ExceptionTranslator implements ResponseErrorHandler {
+public class ExceptionTranslator extends ResponseEntityExceptionHandler {
 
     private ResponseEntity<ErrorResponse> badRequest(ErrorResponse result) {
         return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
@@ -43,27 +39,5 @@ public class ExceptionTranslator implements ResponseErrorHandler {
                 new ErrorResponse(AppConstant.SERVICE_ERROR.getCode(),
                 AppConstant.SERVICE_ERROR.getMessage(), map)
         );
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
-        final Map<String, Object> errorResults = new HashMap<>();
-        for (FieldError e : ex.getBindingResult().getFieldErrors()) {
-            errorResults.put(e.getField(), e.getDefaultMessage());
-        }
-        final ErrorResponse response = new ErrorResponse(AppConstant.BAD_REQUEST.getCode(),
-                "Validation exception", errorResults);
-        return badRequest(response);
-    }
-
-    @Override
-    public boolean hasError(ClientHttpResponse response) throws IOException {
-        return false;
-    }
-
-    @Override
-    public void handleError(ClientHttpResponse response) throws IOException {
-
     }
 }

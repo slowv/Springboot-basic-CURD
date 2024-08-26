@@ -1,4 +1,4 @@
-package com.slowv.youtuberef.common;
+package com.slowv.youtuberef.common.constants;
 
 import com.slowv.youtuberef.web.rest.error.MessageCode;
 import lombok.AccessLevel;

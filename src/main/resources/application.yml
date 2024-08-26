@@ -18,7 +18,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     database: postgresql
-    show-sql: false
+    show-sql: true
     hibernate:
       ddl-auto: update
     generate-ddl: true
@@ -27,6 +27,10 @@ integration:
   youtube:
     api-key: ${API-KEY}
     application-name: YoutubeRef
+
+jwt:
+  jwtSecret: ${JWT_SECRET:1ecd8e66-e5aa-42a3-b73f-ea24cc1fc088}
+  jwtExpiration: ${JWT_EXPIRE:86400000}
 
 server:
   port: 8080
