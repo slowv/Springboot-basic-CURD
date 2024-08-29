@@ -25,7 +25,7 @@ spring:
 
 integration:
   youtube:
-    api-key: ${API-KEY:AIzaSyB1DnsmcF3CVkyC5PEJYFxwzeiUFjIyKbE}
+    api-key: ${API-KEY}
     application-name: YoutubeRef
 
 jwt:
