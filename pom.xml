@@ -43,7 +43,7 @@
         <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-youtube</artifactId>
-            <version>LATEST</version>
+            <version>v3-rev20240814-2.0.0</version>
         </dependency>
 
         <!-- Required for any code that makes calls to the YouTube Analytics API -->

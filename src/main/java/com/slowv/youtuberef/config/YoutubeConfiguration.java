@@ -12,11 +12,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class YoutubeConfiguration {
 
-    @Value("integration.youtube.application-name")
+    @Value("${integration.youtube.application-name}")
     private String applicationName;
 
     @Getter
-    @Value("integration.youtube.api-key")
+    @Value("${integration.youtube.api-key}")
     private String apiKey;
 
     @Bean
