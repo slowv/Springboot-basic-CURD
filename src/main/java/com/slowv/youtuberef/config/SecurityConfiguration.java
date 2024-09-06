@@ -1,6 +1,7 @@
 package com.slowv.youtuberef.config;
 
 import com.slowv.youtuberef.config.filter.AuthenticationFilter;
+import com.slowv.youtuberef.config.handler.CustomAccessDeniedHandler;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -33,6 +34,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
     final AuthenticationFilter authenticationFilter;
+    final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -52,6 +54,10 @@ public class SecurityConfiguration {
                                 auth.requestMatchers(mvc.pattern("/_api/v1/auth/login")).permitAll()
                                         .anyRequest()
                                         .authenticated()
+                )
+                .exceptionHandling(
+                        httpSecurityExceptionHandlingConfigurer ->
+                                httpSecurityExceptionHandlingConfigurer.accessDeniedHandler(customAccessDeniedHandler)
                 );
         return http.build();
     }

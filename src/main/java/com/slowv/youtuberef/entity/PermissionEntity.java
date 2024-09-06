@@ -1,9 +1,7 @@
 package com.slowv.youtuberef.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.ArrayList;
@@ -13,6 +11,9 @@ import java.util.List;
 @Entity(name = "permissions")
 @Setter
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PermissionEntity {
     @Id

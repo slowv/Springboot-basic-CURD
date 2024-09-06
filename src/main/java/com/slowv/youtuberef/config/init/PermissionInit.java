@@ -29,16 +29,16 @@ public class PermissionInit implements CommandLineRunner {
             );
            permissionRepository.saveAll(
                    List.of(
-                           new PermissionEntity()
-                                   .setName("VIDEO_MANAGER")
-                                   .setActions(
-                                           actions
-                                   ),
-                           new PermissionEntity()
-                                   .setName("VIDEO")
-                                   .setActions(
-                                           actions
-                                   )
+                           PermissionEntity
+                                   .builder()
+                                   .name("VIDEO_MANAGER")
+                                   .actions(actions)
+                                   .build(),
+                           PermissionEntity
+                                   .builder()
+                                   .name("VIDEO")
+                                   .actions(actions)
+                                   .build()
                    )
            );
         }

@@ -61,7 +61,7 @@ public class YoutubeChannel {
         videos.setId(results.stream().map(r -> r.getId().getVideoId()).toList());
         final var responseVideo = videos.execute();
         final var videoMap = responseVideo.getItems().stream()
-                .collect(Collectors.toMap(Video::getId, Video::getStatistics));
+                .collect(Collectors.toMap(Video::getId, Video::getStatistics, (existing, replacement) -> existing));
 
         // Lấy danh sách channel
         final var channels = this.youtube.channels().list(List.of("id", "snippet"));
@@ -73,7 +73,7 @@ public class YoutubeChannel {
         channels.setFields("items(snippet(title,thumbnails(default,medium,high)))");
         final var responseChannel = channels.execute();
         final var channelMap = responseChannel.getItems().stream()
-                .collect(Collectors.toMap(Channel::getId, Channel::getSnippet));
+                .collect(Collectors.toMap(Channel::getId, Channel::getSnippet, (existing, replacement) -> existing));
 
         return results.stream()
                 .map(searchResult -> {
