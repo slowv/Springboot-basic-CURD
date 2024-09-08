@@ -2,6 +2,7 @@ package com.slowv.youtuberef.config;
 
 import com.slowv.youtuberef.config.filter.AuthenticationFilter;
 import com.slowv.youtuberef.config.handler.CustomAccessDeniedHandler;
+import io.minio.MinioClient;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,6 +26,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -35,7 +37,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfiguration {
     final AuthenticationFilter authenticationFilter;
     final CustomAccessDeniedHandler customAccessDeniedHandler;
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -52,6 +53,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(
                         auth ->
                                 auth.requestMatchers(mvc.pattern("/_api/v1/auth/login")).permitAll()
+                                        .requestMatchers(mvc.pattern("/_api/v1/auth/register")).permitAll()
                                         .anyRequest()
                                         .authenticated()
                 )

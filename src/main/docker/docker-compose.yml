@@ -5,3 +5,7 @@ services:
     extends:
       file: ./postgresql.yml
       service: postgresql
+  minio:
+    extends:
+      file: ./minio.yml
+      service: minio

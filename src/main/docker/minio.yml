@@ -1,0 +1,22 @@
+name: youtuberef
+
+services:
+  minio:
+    image: bitnami/minio:latest
+    container_name: minio
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: admin@2024
+    volumes:
+      - ./data:/bitnami/minio/data
+      - ./config:/opt/bitnami/minio/config
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    command: minio server /bitnami/minio/data --console-address ":9001"
+
+volumes:
+  data:
+    driver: local
+  config:
+    driver: local

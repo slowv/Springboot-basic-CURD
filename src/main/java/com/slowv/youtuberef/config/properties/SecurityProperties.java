@@ -1,4 +1,4 @@
-package com.slowv.youtuberef.config;
+package com.slowv.youtuberef.config.properties;
 
 import lombok.AccessLevel;
 import lombok.Getter;

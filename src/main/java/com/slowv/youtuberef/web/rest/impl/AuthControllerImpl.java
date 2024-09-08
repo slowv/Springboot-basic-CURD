@@ -1,7 +1,9 @@
 package com.slowv.youtuberef.web.rest.impl;
 
 import com.slowv.youtuberef.service.AuthenticationService;
+import com.slowv.youtuberef.service.dto.AccountDto;
 import com.slowv.youtuberef.service.dto.request.LoginRequest;
+import com.slowv.youtuberef.service.dto.request.RegisterAccountRequest;
 import com.slowv.youtuberef.service.dto.response.LoginResponse;
 import com.slowv.youtuberef.service.dto.response.Response;
 import com.slowv.youtuberef.web.rest.AuthController;
@@ -16,5 +18,11 @@ public class AuthControllerImpl implements AuthController {
     @Override
     public Response<LoginResponse> login(LoginRequest request) {
         return Response.ok(authenticationService.login(request));
+    }
+
+    @Override
+    public Response<AccountDto> register(RegisterAccountRequest request) {
+        return Response
+                .created(authenticationService.register(request));
     }
 }

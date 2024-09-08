@@ -2,7 +2,7 @@ package com.slowv.youtuberef.config.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.slowv.youtuberef.common.utils.JwtUtil;
-import com.slowv.youtuberef.config.SecurityProperties;
+import com.slowv.youtuberef.config.properties.SecurityProperties;
 import com.slowv.youtuberef.entity.AccountEntity;
 import com.slowv.youtuberef.entity.RoleEntity;
 import com.slowv.youtuberef.repository.AccountRepository;
@@ -39,6 +39,12 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     SecurityProperties securityProperties;
     AccountRepository accountRepository;
 
+    static List<String> API_PUBLIC = List.of(
+            "/_api/v1/auth/register",
+            "/_api/v1/auth/login"
+    );
+
+
     /**
      * Same contract as for {@code doFilter}, but guaranteed to be
      * just invoked once per request within a single request thread.
@@ -52,7 +58,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if ("/_api/v1/auth/login".equals(request.getRequestURI())) {
+        if (API_PUBLIC.contains(request.getRequestURI())) {
             filterChain.doFilter(request, response);
         } else {
             final var authentication = getAuthentication(request, response);

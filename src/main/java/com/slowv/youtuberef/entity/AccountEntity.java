@@ -38,6 +38,9 @@ public class AccountEntity extends AbstractAuditingEntity<String> {
     @Column(name = "uuid", unique = true, nullable = false)
     String uuid;
 
+    @Column(name = "avatar", columnDefinition = "text")
+    String avatar;
+
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
