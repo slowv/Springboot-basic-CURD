@@ -1,13 +1,6 @@
 package com.slowv.youtuberef.config.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.slowv.youtuberef.common.utils.JwtUtil;
-import com.slowv.youtuberef.config.properties.SecurityProperties;
-import com.slowv.youtuberef.entity.AccountEntity;
-import com.slowv.youtuberef.entity.RoleEntity;
-import com.slowv.youtuberef.repository.AccountRepository;
-import com.slowv.youtuberef.web.rest.error.MessageCode;
-import jakarta.persistence.EntityNotFoundException;
+import com.slowv.youtuberef.security.jwt.TokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,34 +9,20 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationFilter extends OncePerRequestFilter {
-    SecurityProperties securityProperties;
-    AccountRepository accountRepository;
-
-    static List<String> API_PUBLIC = List.of(
-            "/_api/v1/auth/register",
-            "/_api/v1/auth/login"
-    );
-
+    static String AUTHORIZATION_HEADER = "Authorization";
+    static String AUTHORIZATION_TOKEN = "access_token";
+    TokenProvider tokenProvider;
 
     /**
      * Same contract as for {@code doFilter}, but guaranteed to be
@@ -58,59 +37,22 @@ public class AuthenticationFilter extends OncePerRequestFilter {
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (API_PUBLIC.contains(request.getRequestURI())) {
-            filterChain.doFilter(request, response);
-        } else {
-            final var authentication = getAuthentication(request, response);
-            if (!ObjectUtils.isEmpty(authentication)) {
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                filterChain.doFilter(request, response);
-            } else {
-                responseFailCredential(response, HttpStatus.UNAUTHORIZED);
-            }
+        String jwt = resolveToken(request);
+        if (StringUtils.hasText(jwt) && this.tokenProvider.validateToken(jwt)) {
+            Authentication authentication = this.tokenProvider.getAuthentication(jwt);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
     }
 
-    public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        final var authorization = request.getHeader("Authorization");
-        UsernamePasswordAuthenticationToken authentication = null;
-
-        if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
-            final var token = authorization.substring(7);
-            try {
-                JwtUtil.validateJwtToken(token, securityProperties.getJwtSecret());
-            } catch (Exception ex) {
-                responseFailCredential(response, HttpStatus.UNAUTHORIZED);
-                return null;
-            }
-
-            final var uuid = JwtUtil.getUserUuidFromJwtToken(token, securityProperties.getJwtSecret());
-
-            final var account = this.accountRepository.findByUuid(uuid)
-                    .orElseThrow(EntityNotFoundException::new);
-
-            authentication = new UsernamePasswordAuthenticationToken(account, null, buildAuthorities(account));
-
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+    private String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
         }
-
-        return authentication;
-    }
-
-    private void responseFailCredential(HttpServletResponse response, HttpStatus status) throws IOException {
-        response.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        response.setStatus(status.value());
-        new ObjectMapper()
-                .writeValue(response.getOutputStream(), new MessageCode(String.valueOf(status.value()), status.getReasonPhrase()));
-        response.flushBuffer();
-    }
-
-    private List<? extends GrantedAuthority> buildAuthorities(AccountEntity user) {
-        return user.getRoles().stream()
-                .map(RoleEntity::getName)
-                .map(Enum::name)
-                .map(role -> "ROLE_" + role)
-                .map(SimpleGrantedAuthority::new)
-                .toList();
+        String jwt = request.getParameter(AUTHORIZATION_TOKEN);
+        if (StringUtils.hasText(jwt)) {
+            return jwt;
+        }
+        return null;
     }
 }

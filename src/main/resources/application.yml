@@ -2,6 +2,10 @@ spring:
   application:
     name: YoutubeApp
 
+  jackson:
+    serialization:
+      indent-output: true
+
   servlet:
     multipart:
       max-file-size: 50MB
@@ -21,7 +25,30 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
     generate-ddl: true
+    properties:
+      hibernate.jdbc.time_zone: UTC
+      hibernate.id.new_generator_mappings: true
+      hibernate.connection.provider_disables_autocommit: true
+      hibernate.cache.use_second_level_cache: false
+      hibernate.cache.use_query_cache: false
+      hibernate.generate_statistics: false
+      # modify batch size as necessary
+      hibernate.jdbc.batch_size: 25
+      hibernate.order_inserts: true
+      hibernate.order_updates: true
+      hibernate.query.fail_on_pagination_over_collection_fetch: true
+      hibernate.query.in_clause_parameter_padding: true
+  messages:
+    basename: i18n/messages
+  main:
+    allow-bean-definition-overriding: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
 integration:
   youtube:
@@ -32,8 +59,15 @@ integration:
     secret-key: admin@2024
     url: http://localhost:9000
 jwt:
-  jwtSecret: ${JWT_SECRET:1ecd8e66-e5aa-42a3-b73f-ea24cc1fc088}
-  jwtExpiration: ${JWT_EXPIRE:86400000}
+  # This token must be encoded using Base64 and be at least 256 bits long (you can type `openssl rand -base64 64` on your command line to generate a 512 bits one)
+  jwtSecret: ${JWT_SECRET:MWM0NzE4MDk2MGQwMWFkNjZiNDQ5ZTJkMTJjYTE2N2M1YTFhY2E3M2UzMzBlMGMzZjU3OGVhMGQwMmQyZGM5OTgyODJlOWIwZGVhMzJkOTUzNTdlMjM4ZDIxMTk0YjgzNmEzNDNlMTBjZTMwMGMyNjgzYTc2ZTlmZjE5MzZkZmM=}
+  # Token is valid 24 hours
+  jwtExpiration: ${JWT_EXPIRE:86400}
+  rememberMeExpiration: ${JWT_EXPIRE:2592000}
 
 server:
   port: 8080
+  servlet:
+    session:
+      cookie:
+        http-only: true

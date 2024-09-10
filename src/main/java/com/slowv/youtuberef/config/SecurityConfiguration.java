@@ -2,10 +2,9 @@ package com.slowv.youtuberef.config;
 
 import com.slowv.youtuberef.config.filter.AuthenticationFilter;
 import com.slowv.youtuberef.config.handler.CustomAccessDeniedHandler;
-import io.minio.MinioClient;
-import lombok.AccessLevel;
+import com.slowv.youtuberef.security.SecurityProblemSupport;
+import com.slowv.youtuberef.security.jwt.JWTConfigurer;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -17,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -26,7 +26,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import java.util.Collections;
-import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -37,6 +36,9 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfiguration {
     final AuthenticationFilter authenticationFilter;
     final CustomAccessDeniedHandler customAccessDeniedHandler;
+    final JWTConfigurer jwtConfigurer;
+    final SecurityProblemSupport problemSupport;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -49,7 +51,6 @@ public class SecurityConfiguration {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterAfter(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(
                         auth ->
                                 auth.requestMatchers(mvc.pattern("/_api/v1/auth/login")).permitAll()
@@ -57,9 +58,22 @@ public class SecurityConfiguration {
                                         .anyRequest()
                                         .authenticated()
                 )
+                .with(jwtConfigurer, withDefaults())
                 .exceptionHandling(
                         httpSecurityExceptionHandlingConfigurer ->
-                                httpSecurityExceptionHandlingConfigurer.accessDeniedHandler(customAccessDeniedHandler)
+                                httpSecurityExceptionHandlingConfigurer
+                                        .accessDeniedHandler(problemSupport)
+                                        .authenticationEntryPoint(problemSupport)
+                )
+                .headers(
+                        headersConfigurer ->
+                                headersConfigurer
+                                        .referrerPolicy(
+                                                referrer ->
+                                                        referrer.policy(
+                                                                ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN
+                                                        )
+                                        )
                 );
         return http.build();
     }
