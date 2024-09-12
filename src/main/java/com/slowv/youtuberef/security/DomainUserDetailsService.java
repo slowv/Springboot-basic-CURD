@@ -36,19 +36,19 @@ public class DomainUserDetailsService implements UserDetailsService {
         if (new EmailValidator().isValid(username, null)) {
             return accountRepository
                     .findByUsername(username)
-                    .map(account -> createSpringSecurityUser(username, account))
+                    .map(this::createSpringSecurityUser)
                     .orElseThrow(() -> new UsernameNotFoundException("User with email " + username + " was not found in the database"));
         }
-        String lowercaseLogin = username.toLowerCase(Locale.ENGLISH);
+        final var lowercaseLogin = username.toLowerCase(Locale.ENGLISH);
         return accountRepository
                 .findByUsername(lowercaseLogin)
-                .map(account -> createSpringSecurityUser(lowercaseLogin, account))
+                .map(this::createSpringSecurityUser)
                 .orElseThrow(() -> new UsernameNotFoundException("User " + lowercaseLogin + " was not found in the database"));
     }
 
-    private User createSpringSecurityUser(String lowercaseLogin, AccountEntity account) {
+    private User createSpringSecurityUser(AccountEntity account) {
 
-        List<GrantedAuthority> grantedAuthorities = account
+        final var grantedAuthorities = account
                 .getRoles()
                 .stream()
                 .map(RoleEntity::getName)

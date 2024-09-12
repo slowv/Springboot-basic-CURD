@@ -2,7 +2,6 @@ package com.slowv.youtuberef.service.impl;
 
 import com.slowv.youtuberef.config.properties.SecurityProperties;
 import com.slowv.youtuberef.entity.AccountEntity;
-import com.slowv.youtuberef.exception.AuthenticationException;
 import com.slowv.youtuberef.integration.minio.MinioChannel;
 import com.slowv.youtuberef.repository.AccountRepository;
 import com.slowv.youtuberef.repository.RoleRepository;
@@ -14,14 +13,11 @@ import com.slowv.youtuberef.service.dto.request.RegisterAccountRequest;
 import com.slowv.youtuberef.service.dto.response.LoginResponse;
 import com.slowv.youtuberef.service.mapper.AccountMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 
 import java.util.UUID;
 
@@ -32,9 +28,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-
-    // Properties
-    private final SecurityProperties securityProperties;
 
     // Channel
     private final MinioChannel minioChannel;
