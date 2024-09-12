@@ -18,6 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -26,6 +27,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -38,6 +40,11 @@ public class SecurityConfiguration {
     final CustomAccessDeniedHandler customAccessDeniedHandler;
     final JWTConfigurer jwtConfigurer;
     final SecurityProblemSupport problemSupport;
+
+    public static final List<String> PUBLIC_APIS = List.of(
+            "/_api/v1/auth/login",
+            "/_api/v1/auth/register"
+    );
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -52,13 +59,10 @@ public class SecurityConfiguration {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
-                        auth ->
-                                auth.requestMatchers(mvc.pattern("/_api/v1/auth/login")).permitAll()
-                                        .requestMatchers(mvc.pattern("/_api/v1/auth/register")).permitAll()
-                                        .anyRequest()
-                                        .authenticated()
+                        auth -> auth.requestMatchers(apiPublic(mvc)).permitAll()
+                                .anyRequest()
+                                .authenticated()
                 )
-                .with(jwtConfigurer, withDefaults())
                 .exceptionHandling(
                         httpSecurityExceptionHandlingConfigurer ->
                                 httpSecurityExceptionHandlingConfigurer
@@ -74,8 +78,15 @@ public class SecurityConfiguration {
                                                                 ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN
                                                         )
                                         )
-                );
+                )
+                .apply(jwtConfigurer);
         return http.build();
+    }
+
+    public RequestMatcher[] apiPublic(MvcRequestMatcher.Builder mvc) {
+        return PUBLIC_APIS.stream()
+                .map(mvc::pattern)
+                .toArray(RequestMatcher[]::new);
     }
 
     @Bean
@@ -94,15 +105,5 @@ public class SecurityConfiguration {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
-
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("*");
-            }
-        };
     }
 }
