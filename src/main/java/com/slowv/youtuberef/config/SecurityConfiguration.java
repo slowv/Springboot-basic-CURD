@@ -1,7 +1,6 @@
 package com.slowv.youtuberef.config;
 
-import com.slowv.youtuberef.config.filter.AuthenticationFilter;
-import com.slowv.youtuberef.config.handler.CustomAccessDeniedHandler;
+import com.slowv.youtuberef.config.properties.SecurityProperties;
 import com.slowv.youtuberef.security.SecurityProblemSupport;
 import com.slowv.youtuberef.security.jwt.JWTConfigurer;
 import lombok.RequiredArgsConstructor;
@@ -12,18 +11,16 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import java.util.Collections;
@@ -36,10 +33,10 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @RequiredArgsConstructor
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
-    final AuthenticationFilter authenticationFilter;
-    final CustomAccessDeniedHandler customAccessDeniedHandler;
     final JWTConfigurer jwtConfigurer;
     final SecurityProblemSupport problemSupport;
+    final SecurityProperties securityProperties;
+    final UserDetailsService userDetailsService;
 
     public static final List<String> PUBLIC_APIS = List.of(
             "/_api/v1/auth/login",
@@ -62,6 +59,12 @@ public class SecurityConfiguration {
                         auth -> auth.requestMatchers(apiPublic(mvc)).permitAll()
                                 .anyRequest()
                                 .authenticated()
+                )
+                .rememberMe(
+                        httpSecurityRememberMeConfigurer ->
+                                httpSecurityRememberMeConfigurer.rememberMeParameter("remember-me")
+                                        .tokenValiditySeconds((int) securityProperties.getRememberMeExpiration())
+                                        .userDetailsService(userDetailsService)
                 )
                 .exceptionHandling(
                         httpSecurityExceptionHandlingConfigurer ->

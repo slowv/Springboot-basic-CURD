@@ -78,6 +78,7 @@ public class TokenProvider {
         Collection<? extends GrantedAuthority> authorities = Arrays
                 .stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                 .filter(auth -> !auth.trim().isEmpty())
+                .map("ROLE_"::concat)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
 

@@ -43,19 +43,11 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(jwt) && this.tokenProvider.validateToken(jwt)) {
             Authentication authentication = this.tokenProvider.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            filterChain.doFilter(request, response);
-        } else {
-            responseFailCredential(response, HttpStatus.UNAUTHORIZED);
         }
+        filterChain.doFilter(request, response);
     }
 
-    private void responseFailCredential(HttpServletResponse response, HttpStatus status) throws IOException {
-        response.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        response.setStatus(status.value());
-        new ObjectMapper()
-                .writeValue(response.getOutputStream(), new MessageCode(String.valueOf(status.value()), status.getReasonPhrase()));
-        response.flushBuffer();
-    }
+
 
 
     private String resolveToken(HttpServletRequest request) {
