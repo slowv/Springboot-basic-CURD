@@ -13,7 +13,7 @@ import java.util.List;
 @RequestMapping(value = "/_api/v1/youtube")
 public interface YoutubeController {
 
-    @Secured({"ROLE_USER"})
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @GetMapping("/search")
     Response<List<YoutubeItem>> search(
             @RequestParam String search,

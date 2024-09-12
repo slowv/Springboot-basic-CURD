@@ -18,13 +18,11 @@ import java.io.IOException;
 import static org.apiguardian.api.API.Status.INTERNAL;
 import static org.apiguardian.api.API.Status.STABLE;
 
-@API(status = STABLE)
 @Component
 public class SecurityProblemSupport implements AuthenticationEntryPoint, AccessDeniedHandler {
 
     private final HandlerExceptionResolver resolver;
 
-    @API(status = INTERNAL)
     @Autowired
     public SecurityProblemSupport(
             @Qualifier("handlerExceptionResolver") final HandlerExceptionResolver resolver) {
