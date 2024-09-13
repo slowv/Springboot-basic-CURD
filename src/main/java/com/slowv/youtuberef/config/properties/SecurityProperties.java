@@ -15,5 +15,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SecurityProperties {
     String jwtSecret;
-    int jwtExpiration;
+    long jwtExpiration;
+    long rememberMeExpiration;
 }
