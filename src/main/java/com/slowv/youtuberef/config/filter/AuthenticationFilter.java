@@ -1,8 +1,6 @@
 package com.slowv.youtuberef.config.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.slowv.youtuberef.security.jwt.TokenProvider;
-import com.slowv.youtuberef.web.rest.error.MessageCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,9 +9,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
