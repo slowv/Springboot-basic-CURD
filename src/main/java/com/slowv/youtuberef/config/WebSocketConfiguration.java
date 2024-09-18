@@ -1,6 +1,7 @@
 package com.slowv.youtuberef.config;
 
 import com.slowv.youtuberef.config.filter.HttpSessionHandshakeInterceptor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
@@ -19,20 +20,22 @@ import java.util.Collection;
 import java.util.Map;
 
 @Configuration
+@RequiredArgsConstructor
 @EnableWebSocketMessageBroker
 public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
-    private HttpSessionHandshakeInterceptor httpSessionHandshakeInterceptor;
+    private final HttpSessionHandshakeInterceptor httpSessionHandshakeInterceptor;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");
+        config.enableSimpleBroker("/chat", "/notification");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/websocket/tracker")
+        registry.addEndpoint("/yubutu/ws").setAllowedOrigins("*");
+        registry.addEndpoint("/yubutu/ws")
                 .setHandshakeHandler(defaultHandshakeHandler())
-                .setAllowedOrigins("*")
+                .setAllowedOriginPatterns("*")
                 .withSockJS()
                 .setInterceptors(httpSessionHandshakeInterceptor);
     }

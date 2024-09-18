@@ -9,7 +9,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -40,7 +42,8 @@ public class SecurityConfiguration {
 
     public static final List<String> PUBLIC_APIS = List.of(
             "/_api/v1/auth/login",
-            "/_api/v1/auth/register"
+            "/_api/v1/auth/register",
+            "/yubutu/ws/**"
     );
 
     @Bean
@@ -81,6 +84,8 @@ public class SecurityConfiguration {
                                                                 ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN
                                                         )
                                         )
+                                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
+                                        .httpStrictTransportSecurity(HeadersConfigurer.HstsConfig::disable)
                 )
                 .apply(jwtConfigurer);
         return http.build();
