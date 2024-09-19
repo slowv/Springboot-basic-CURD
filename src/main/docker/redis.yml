@@ -1,0 +1,10 @@
+# This configuration is intended for development purpose, it's **your** responsibility to harden it for production
+name: youtuberef
+version: '3.8'
+services:
+  redis:
+    image: redis:6.2.7
+    # If you want to expose these ports outside your dev PC,
+    # remove the "127.0.0.1:" prefix
+    ports:
+      - 6379:6379
