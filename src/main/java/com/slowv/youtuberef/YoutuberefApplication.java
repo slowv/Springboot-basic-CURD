@@ -1,5 +1,6 @@
 package com.slowv.youtuberef;
 
+import com.slowv.youtuberef.config.properties.CacheProperties;
 import com.slowv.youtuberef.config.properties.MinioProperties;
 import com.slowv.youtuberef.config.properties.SecurityProperties;
 import io.micrometer.common.util.StringUtils;
@@ -17,7 +18,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 @SpringBootApplication(exclude = {ErrorMvcAutoConfiguration.class})
-@EnableConfigurationProperties({SecurityProperties.class, MinioProperties.class})
+@EnableConfigurationProperties({SecurityProperties.class, MinioProperties.class, CacheProperties.class})
 public class YoutuberefApplication {
 
     private static final Logger log = LoggerFactory.getLogger(YoutuberefApplication.class);

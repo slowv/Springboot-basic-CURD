@@ -14,7 +14,7 @@ public class NotificationService {
 
     @Scheduled(fixedRate = 5000)
     public void sendNotification() {
-        log.info("sending notification");
-        messagingTemplate.convertAndSend("/notification", "Push notification!!!");
+//        log.info("sending notification");
+//        messagingTemplate.convertAndSend("/notification", "Push notification!!!");
     }
 }
