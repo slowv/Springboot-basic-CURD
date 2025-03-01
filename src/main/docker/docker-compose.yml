@@ -1,4 +1,3 @@
-version: '3.8'
 name: youtuberef
 services:
   postgresql:
@@ -13,3 +12,14 @@ services:
     extends:
       file: ./redis.yml
       service: redis
+  zookeeper:
+    extends:
+      file: ./kafka.yml
+      service: zookeeper
+  kafka:
+    extends:
+      file: ./kafka.yml
+      service: kafka
+    depends_on:
+      - zookeeper
+

@@ -11,9 +11,25 @@ spring:
       max-file-size: 50MB
       max-request-size: 100MB
 
+  #  KAFKA
+  cloud:
+    function:
+      definition: syncVideos;receiveVideos
+    stream:
+      bindings:
+        syncVideos-out-0:
+          destination: sync-videos-topic
+        receiveVideos-in-0:
+          destination: sync-videos-topic
+          group: video-group
+      kafka:
+        streams:
+          binder:
+            brokers: localhost:9092
+
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:postgresql://${POSTGRESQL_HOST:localhost}:${POSTGRESQL_PORT:5432}/${POSTGRESQL_DATABASE:youtuberef}
+    url: jdbc:postgresql://${POSTGRESQL_HOST:localhost}:${POSTGRESQL_PORT:5432}/${POSTGRESQL_DATABASE:restful}
     username: ${POSTGRESQL_USER:user}
     password: ${POSTGRESQL_PASS:123456}
     hikari:
@@ -22,7 +38,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     database: postgresql
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: update
       naming:
