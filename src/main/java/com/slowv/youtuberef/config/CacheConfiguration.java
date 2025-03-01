@@ -1,9 +1,8 @@
 package com.slowv.youtuberef.config;
 
 import com.slowv.youtuberef.config.properties.CacheProperties;
-import lombok.RequiredArgsConstructor;
 import org.redisson.Redisson;
-import org.redisson.config.ClusterServersConfig;
+import org.redisson.config.Config;
 import org.redisson.jcache.configuration.RedissonConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.cache.JCacheManagerCustomizer;
@@ -13,7 +12,6 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.redisson.config.Config;
 
 import javax.cache.configuration.MutableConfiguration;
 import javax.cache.expiry.CreatedExpiryPolicy;
@@ -71,9 +69,7 @@ public class CacheConfiguration {
 
     @Bean
     public JCacheManagerCustomizer cacheManagerCustomizer(javax.cache.configuration.Configuration<Object, Object> jcacheConfiguration) {
-        return cm -> {
-            createCache(cm, ACCOUNT_BY_EMAIL_CACHE, jcacheConfiguration);
-        };
+        return cm -> createCache(cm, ACCOUNT_BY_EMAIL_CACHE, jcacheConfiguration);
     }
 
     private void createCache(

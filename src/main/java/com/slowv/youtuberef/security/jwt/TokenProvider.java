@@ -48,7 +48,6 @@ public class TokenProvider {
         this.tokenValidityInMillisecondsForRememberMe =
                 1000 * securityProperties.getRememberMeExpiration();
 
-
         this.securityMetersService = securityMetersService;
     }
 
